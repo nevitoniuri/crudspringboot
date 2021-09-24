@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -74,6 +75,39 @@ public class GreetingsController {
 		usuarioRepository.deleteById(idUsuario);
 		
 		return new ResponseEntity<String>("Usuario com ID " + idUsuario + " deletado com sucesso.", HttpStatus.OK);
+	}
+	
+	@GetMapping(value = "buscaruserid") /*mapeia a url*/
+	@ResponseBody /* descricao da resposta */
+	public ResponseEntity<Usuario> buscaruserid (@RequestParam(name = "idUsuario") Long idUsuario){
+		
+		Usuario usuarioBuscado = usuarioRepository.findById(idUsuario).get();
+		
+		return new ResponseEntity<Usuario>(usuarioBuscado, HttpStatus.OK);
+	}
+	
+	
+	@PutMapping(value = "atualizar") /*mapeia a url*/
+	@ResponseBody /* descricao da resposta */
+	public ResponseEntity<?> atualizar (@RequestBody Usuario usuario){
+		
+		if(usuario.getId() == null) {
+			return new ResponseEntity<String> ("Id não foi informado ou não encontrado no Banco de Dados.", HttpStatus.OK);
+		}
+		
+		Usuario usuarioAtualizado = usuarioRepository.saveAndFlush(usuario);
+		
+		return new ResponseEntity<Usuario>(usuarioAtualizado, HttpStatus.CREATED);
+	}
+	
+	
+	@GetMapping(value = "buscarpornome") /*mapeia a url*/
+	@ResponseBody /* descricao da resposta */
+	public ResponseEntity<List<Usuario>> buscarPorNome (@RequestParam(name = "name") String name){
+		
+		List<Usuario> usuarioBuscado = usuarioRepository.buscarPorNome(name.trim().toUpperCase());
+		
+		return new ResponseEntity<List<Usuario>> (usuarioBuscado, HttpStatus.OK);
 	}
 	
 }
